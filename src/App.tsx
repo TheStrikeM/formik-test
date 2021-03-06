@@ -3,14 +3,13 @@ import {
     AppBar,
     Box,
     Button,
-    Container,
+    Container, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
     IconButton,
     makeStyles,
     TextField,
     Toolbar,
     Typography
 } from "@material-ui/core";
-import MenuIcon from '@material-ui/icons/Menu'
 import {FormikHelpers, useFormik} from "formik";
 import * as yup from 'yup'
 import './App.css'
@@ -62,21 +61,24 @@ function App() {
             password: '',
         },
         validationSchema: validationSchema,
-        onSubmit: (values: Values, {setSubmitting}: FormikHelpers<Values>) => {
+        onSubmit: (values: Values) => {
             setTimeout(() => {
-                alert(JSON.stringify(values, null, 2));
-                setSubmitting(false)
+                setDialog(true)
             }, 500);
         },
     });
     const classes = useStyles()
+    const [dialog, setDialog] = useState<boolean>(false)
+
+    const handleClose = () => {
+        setDialog(false)
+    }
 
     return (
         <div className="App">
             <AppBar color={"secondary"} position="static">
                 <Toolbar>
                     <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-                        <MenuIcon />
                     </IconButton>
                     <Typography variant="h6" className={classes.title}>
                         MegaShop
@@ -110,9 +112,31 @@ function App() {
                             helperText={formik.touched.password && formik.errors.password}
                         />
                         <Box maxWidth={"xs-1"}>
-                            <Button className={classes.root} color="primary" variant="contained" disabled={formik.isSubmitting} type="submit">
+                            <Button className={classes.root} color="primary" variant="contained" type="submit">
                                 Submit
                             </Button>
+                            <Dialog
+                                open={dialog}
+                                onClose={handleClose}
+                                aria-labelledby="alert-dialog-title"
+                                aria-describedby="alert-dialog-description"
+                            >
+                                <DialogTitle id="alert-dialog-title">{"Information"}</DialogTitle>
+                                <DialogContent>
+                                    <DialogContentText id="alert-dialog-description">
+                                        <p><b>Email: </b> {formik.values.email}</p>
+                                        <p><b>Password: </b> {formik.values.password}</p>
+                                    </DialogContentText>
+                                </DialogContent>
+                                <DialogActions>
+                                    <Button onClick={handleClose} color="primary">
+                                        Disagree
+                                    </Button>
+                                    <Button onClick={handleClose} color="primary" autoFocus>
+                                        Agree
+                                    </Button>
+                                </DialogActions>
+                            </Dialog>
                         </Box>
                     </form>
                 </Box>
